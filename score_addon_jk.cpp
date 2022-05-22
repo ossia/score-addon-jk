@@ -1,5 +1,5 @@
 #include "score_addon_jk.hpp"
-#include <Jk/AnEffect.hpp>
+#include <Jk/Filter.hpp>
 
 #include <Avnd/Factories.hpp>
 #include <score/plugins/FactorySetup.hpp>
@@ -16,7 +16,7 @@ score_addon_jk::factories(
     const score::ApplicationContext& ctx,
     const score::InterfaceKey& key) const
 {
-  return Avnd::instantiate_fx<Jk::AnEffect>(ctx, key);
+  return Avnd::instantiate_fx<Jk::Filter>(ctx, key);
 }
 
 std::vector<score::PluginKey> score_addon_jk::required() const

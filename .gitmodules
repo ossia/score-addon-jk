@@ -1,0 +1,3 @@
+[submodule "3rdparty/jk"]
+	path = 3rdparty/jk
+	url = https://github.com/celtera/jk
