@@ -15,6 +15,7 @@ namespace jk
 {
 namespace config
 {
+namespace variant_ns = ::mpark;
 template <typename... Args>
 using variant = mpark::variant<Args...>;
 template <typename... Args>
