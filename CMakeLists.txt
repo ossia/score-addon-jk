@@ -8,6 +8,10 @@ else()
   endif()
 endif()
 
+if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES aarch64)
+  return()
+endif()
+
 project(score_addon_jk LANGUAGES CXX)
 
 add_library(
