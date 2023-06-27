@@ -1,10 +1,10 @@
 #pragma once
+#include <boost/variant2.hpp>
 #include <halp/callback.hpp>
 #include <halp/controls.hpp>
 #include <halp/messages.hpp>
 #include <halp/meta.hpp>
 #include <halp/static_string.hpp>
-#include <mpark/variant.hpp>
 
 #include <map>
 #include <string>
@@ -15,9 +15,9 @@ namespace jk
 {
 namespace config
 {
-namespace variant_ns = ::mpark;
+namespace variant_ns = ::boost::variant2;
 template <typename... Args>
-using variant = mpark::variant<Args...>;
+using variant = boost::variant2::variant<Args...>;
 template <typename... Args>
 using vector = std::vector<Args...>;
 template <typename... Args>
@@ -53,11 +53,7 @@ struct Filter
 
   struct
   {
-    struct
-    {
-      static consteval auto name() { return "bang"; }
-      halp::basic_callback<void(value)> call;
-    } value;
+    halp::callback<"bang", value> bang;
   } outputs;
 
   struct messages

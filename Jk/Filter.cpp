@@ -10,13 +10,13 @@ namespace Jk
 void Filter::onMessage(const value& v)
 {
   using namespace jk;
-  if (v != value{std::string{}}.v)
+  if(v != value{std::string{}}.v)
   {
-    if (!actions.empty())
+    if(!actions.empty())
     {
-      for (auto&& v : action::process_sequence(v, actions))
+      for(auto&& v : action::process_sequence(v, actions))
       {
-        outputs.value.call(std::move(v.data));
+        outputs.bang(std::move(v.data));
       }
     }
   }
@@ -24,7 +24,7 @@ void Filter::onMessage(const value& v)
 
 void Filter::updateProgram(const std::string& value)
 {
-  if (auto res = jk::parse(this->inputs.program.value))
+  if(auto res = jk::parse(this->inputs.program.value))
     actions = std::move(res->current_seq);
   else
     actions.clear();
