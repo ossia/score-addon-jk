@@ -30,3 +30,10 @@ void Filter::updateProgram(const std::string& value)
     actions.clear();
 }
 }
+
+// Sanity-checks
+#include <avnd/binding/ossia/from_value.hpp>
+#include <avnd/binding/ossia/to_value.hpp>
+static_assert(oscr::is_variant<jk::value>::value);
+static_assert(oscr::is_variant_vector<std::vector<jk::value>>::value);
+static_assert(oscr::is_variant_list_vector<std::vector<std::vector<jk::value>>>::value);

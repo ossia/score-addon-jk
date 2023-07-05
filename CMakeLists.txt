@@ -1,29 +1,37 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 
-if(NOT TARGET score_lib_base)
-  include("${SCORE_SOURCE_DIR}/cmake/ScoreExternalAddon.cmake")
-else()
-  if(NOT TARGET score_plugin_avnd)
-    return()
-  endif()
-endif()
-
 if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES aarch64)
   return()
 endif()
 
+if(NOT TARGET score_lib_base)
+  include(ScoreExternalAddon)
+endif()
+
+include(ScoreAvndHelper)
+
 project(score_addon_jk LANGUAGES CXX)
 
-add_library(
-  score_addon_jk
-  Jk/Filter.hpp
-  Jk/Filter.cpp
-
-  score_addon_jk.hpp
-  score_addon_jk.cpp
+avnd_score_plugin_init(
+  BASE_TARGET score_addon_jk
 )
-
-setup_score_plugin(score_addon_jk)
 
 target_include_directories(score_addon_jk PRIVATE 3rdparty/jk/include)
 target_link_libraries(score_addon_jk PUBLIC score_plugin_engine score_plugin_avnd)
+
+avnd_score_plugin_add(
+  BASE_TARGET score_addon_jk
+  SOURCES
+    Jk/Filter.hpp
+    Jk/Filter.cpp
+  TARGET jk
+  MAIN_CLASS Filter
+  NAMESPACE Jk
+)
+
+avnd_score_plugin_finalize(
+  BASE_TARGET score_addon_jk
+  PLUGIN_VERSION 1
+  PLUGIN_UUID "c8a00c5e-71ea-4eb7-bc21-4af7b7c6030f"
+)
+
