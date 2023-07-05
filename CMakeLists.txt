@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
 if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES aarch64)
   return()
@@ -8,7 +8,9 @@ if(NOT TARGET score_lib_base)
   include(ScoreExternalAddon)
 endif()
 
-include(ScoreAvndHelper)
+if(NOT TARGET score_plugin_avnd)
+  return()
+endif()
 
 project(score_addon_jk LANGUAGES CXX)
 
