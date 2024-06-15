@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
-if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES aarch64)
-  return()
-endif()
+# if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES aarch64)
+#   return()
+# endif()
 
 if(NOT TARGET score_lib_base)
   include(ScoreExternalAddon)
