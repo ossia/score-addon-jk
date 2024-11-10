@@ -38,6 +38,7 @@ struct Filter
   halp_meta(category, "Control/Data processing")
   halp_meta(author, "Jean-Michaël Celerier")
   halp_meta(description, "Object query filter")
+  halp_meta(manual_url, "https://ossia.io/score-docs/processes/object-filter.html")
   halp_meta(uuid, "4cf2f89f-45b6-4878-92ff-23d3cee1c67e")
 
   void onMessage(const value& in);
