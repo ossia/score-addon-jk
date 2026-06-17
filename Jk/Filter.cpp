@@ -31,9 +31,13 @@ void Filter::updateProgram(const std::string& value)
 }
 }
 
-// Sanity-checks
+// Sanity-checks: the avnd ossia value bindings pull in libossia, which is only
+// present in an ossia/score build. Standalone the object must not depend on it,
+// so gate the checks on libossia actually being reachable.
+#if __has_include(<ossia/network/value/value.hpp>)
 #include <avnd/binding/ossia/from_value.hpp>
 #include <avnd/binding/ossia/to_value.hpp>
 static_assert(oscr::is_variant<jk::value>::value);
 static_assert(oscr::is_variant_vector<std::vector<jk::value>>::value);
 static_assert(oscr::is_variant_list_vector<std::vector<std::vector<jk::value>>>::value);
+#endif
