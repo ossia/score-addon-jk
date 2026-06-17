@@ -28,6 +28,9 @@ avnd_addon_object(
   CLASS Filter
   NAMESPACE Jk
   DEPENDENCIES jk_deps
+  # Absolute MAIN_FILE: the generated dump/back-end sources live in the build tree
+  # and #include it, so a relative path wouldn't resolve from there.
+  MAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Jk/Filter.hpp"
   SOURCES
     Jk/Filter.hpp
     Jk/Filter.cpp)
