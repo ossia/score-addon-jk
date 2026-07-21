@@ -1,39 +1,46 @@
 cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
-# if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES aarch64)
-#   return()
-# endif()
-
-if(NOT TARGET score_lib_base)
-  include(ScoreExternalAddon)
-endif()
-
-if(NOT TARGET score_plugin_avnd)
-  return()
-endif()
-
 project(score_addon_jk LANGUAGES CXX)
 
-avnd_score_plugin_init(
-  BASE_TARGET score_addon_jk
-)
+# Max/MSP externals link the static CRT (/MT) on Windows, as the official
+# max-sdk-base requires. Set it for the whole addon -- before Avendish and the
+# object library are created -- so every target shares one runtime; mixing /MT
+# and /MD trips MSVC with LNK2038. (CMP0091 is NEW via cmake_minimum_required.)
+if(MSVC)
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
 
-target_include_directories(score_addon_jk PRIVATE 3rdparty/jk/include)
-target_link_libraries(score_addon_jk PUBLIC score_plugin_engine score_plugin_avnd)
+# Use the Avendish the host (ossia score) provides; otherwise fetch it.
+find_package(Avendish QUIET)
+if(NOT Avendish_FOUND)
+  include(FetchContent)
+  FetchContent_Declare(
+    Avendish
+    GIT_REPOSITORY "https://github.com/celtera/avendish"
+    GIT_TAG 2826c92)
+  FetchContent_Populate(Avendish)
+  list(APPEND CMAKE_PREFIX_PATH "${avendish_SOURCE_DIR}")
+  find_package(Avendish REQUIRED)
+endif()
 
-avnd_score_plugin_add(
-  BASE_TARGET score_addon_jk
+# Object dependency: linked so it reaches the score base target and every standalone
+# back-end (each back-end compiles the object header directly).
+add_library(jk_deps INTERFACE)
+target_include_directories(jk_deps INTERFACE 3rdparty/jk/include)
+
+avnd_addon_init(NAME score_addon_jk)
+
+avnd_addon_object(
+  BASE score_addon_jk
+  C_NAME jk
+  CLASS Filter
+  NAMESPACE Jk
+  DEPENDENCIES jk_deps
+  # Absolute MAIN_FILE: the generated dump/back-end sources live in the build tree
+  # and #include it, so a relative path wouldn't resolve from there.
+  MAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Jk/Filter.hpp"
   SOURCES
     Jk/Filter.hpp
-    Jk/Filter.cpp
-  TARGET jk
-  MAIN_CLASS Filter
-  NAMESPACE Jk
-)
+    Jk/Filter.cpp)
 
-avnd_score_plugin_finalize(
-  BASE_TARGET score_addon_jk
-  PLUGIN_VERSION 1
-  PLUGIN_UUID "c8a00c5e-71ea-4eb7-bc21-4af7b7c6030f"
-)
-
+avnd_addon_finalize(NAME score_addon_jk UUID c8a00c5e-71ea-4eb7-bc21-4af7b7c6030f VERSION 1)
