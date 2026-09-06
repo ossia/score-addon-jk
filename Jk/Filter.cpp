@@ -12,7 +12,10 @@ void Filter::onMessage(const value& v)
   using namespace jk;
   if(v == value{std::string{}}.v)
     return;
-  if(actions.empty())
+  // An output callback may recompile this node. Keep this message's program
+  // alive until all its suspended producers have finished.
+  const auto active_actions = actions;
+  if(!active_actions || active_actions->empty())
     return;
 
   // A jq type error - `.a` on a number, `1 + "x"` - is a normal outcome of
@@ -25,8 +28,13 @@ void Filter::onMessage(const value& v)
   // not take the process down either.
   try
   {
-    for(auto&& res : action::process_sequence(v, actions))
-      outputs.bang(std::move(res.data));
+    evaluation_scope scope{evaluation};
+    for(auto&& res : action::process_sequence(v, *active_actions))
+    {
+      // Conversion and any callback-retained copies must outlive the arena.
+      allocation_scope output_storage{nullptr};
+      outputs.bang.call.function(outputs.bang.call.context, res.get());
+    }
   }
   catch(const jk::error&)
   {
@@ -43,13 +51,14 @@ void Filter::updateProgram(const std::string& value)
   try
   {
     if(auto res = jk::parse(this->inputs.program.value))
-      actions = std::move(res->current_seq);
+      actions = std::make_shared<const std::vector<jk::action_fun>>(
+          std::move(res->current_seq));
     else
-      actions.clear();
+      actions.reset();
   }
   catch(...)
   {
-    actions.clear();
+    actions.reset();
   }
 }
 }

@@ -5,8 +5,11 @@
 #include <halp/messages.hpp>
 #include <halp/meta.hpp>
 #include <halp/static_string.hpp>
+#include <jk/memory.hpp>
 
+#include <array>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -18,15 +21,15 @@ namespace config
 namespace variant_ns = ::boost::variant2;
 template <typename... Args>
 using variant = boost::variant2::variant<Args...>;
-template <typename... Args>
-using vector = std::vector<Args...>;
-template <typename... Args>
-using map = std::map<Args...>;
-using string = std::string;
+template <typename T>
+using vector = std::vector<T, jk::allocator<T>>;
+template <typename K, typename V>
+using map = std::map<K, V, std::less<>, jk::allocator<std::pair<const K, V>>>;
+using string = std::basic_string<char, std::char_traits<char>, jk::allocator<char>>;
 }
 }
 
-#include <jk/generator.hpp>
+#include <jk/action_fun.hpp>
 #include <jk/value.hpp>
 namespace Jk
 {
@@ -54,7 +57,7 @@ struct Filter
 
   struct
   {
-    halp::callback<"bang", value> bang;
+    halp::callback<"bang", const value&> bang;
   } outputs;
 
   struct messages
@@ -63,6 +66,10 @@ struct Filter
   };
 
 private:
-  std::vector<jk::action_fun> actions;
+  std::shared_ptr<const std::vector<jk::action_fun>> actions;
+  // Common messages use preallocated storage; explicit upstream growth keeps
+  // large-message compatibility. Strict bounded contexts are available in jk.
+  std::array<std::byte, 256 * 1024> evaluation_storage;
+  jk::evaluation_context evaluation{evaluation_storage, std::pmr::new_delete_resource()};
 };
 }
