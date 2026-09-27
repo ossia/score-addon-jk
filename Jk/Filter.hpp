@@ -70,6 +70,6 @@ private:
   // Common messages use preallocated storage; explicit upstream growth keeps
   // large-message compatibility. Strict bounded contexts are available in jk.
   std::array<std::byte, 256 * 1024> evaluation_storage;
-  jk::evaluation_context evaluation{evaluation_storage, std::pmr::new_delete_resource()};
+  jk::evaluation_context evaluation{evaluation_storage, jk::pmr::new_delete_resource()};
 };
 }
