@@ -38,7 +38,7 @@ struct Filter
 {
   halp_meta(name, "Object filter")
   halp_meta(c_name, "object_filter")
-  halp_meta(category, "Control/Data processing")
+  halp_meta(category, "Control/Data Processing")
   halp_meta(author, "Jean-Michaël Celerier")
   halp_meta(description, "Object query filter")
   halp_meta(manual_url, "https://ossia.io/score-docs/processes/object-filter.html")
