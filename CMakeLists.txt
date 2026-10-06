@@ -31,6 +31,10 @@ avnd_score_plugin_add(
   NAMESPACE Jk
 )
 
+if(COMMAND score_register_license)
+  score_register_license(jk URL "https://github.com/jcelerier/jk" FILES "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/jk/LICENSE")
+endif()
+
 avnd_score_plugin_finalize(
   BASE_TARGET score_addon_jk
   PLUGIN_VERSION 1
