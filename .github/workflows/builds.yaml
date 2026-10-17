@@ -10,21 +10,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Build + package the score add-on (dev / SDK / JIT / release tracks).
-  score:
+  ci:
     uses: ossia/actions/.github/workflows/score-addon.yml@master
     secrets: inherit
-
-  # Build the same object standalone, one artifact per back-end, and publish
-  # the continuous release. CATEGORY object: data / message back-ends, no audio
-  # plugin formats (jk is a JSON/message filter).
-  standalone:
-    uses: ossia/actions/.github/workflows/avnd-addon.yml@master
-    secrets: inherit
-    with:
-      pd: true
-      max: true
-      python: true
-      touchdesigner: true
-      godot: true
-      wasm: true
