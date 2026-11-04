@@ -50,3 +50,16 @@ if(COMMAND score_register_license)
 endif()
 
 avnd_addon_finalize(NAME score_addon_jk UUID c8a00c5e-71ea-4eb7-bc21-4af7b7c6030f VERSION 1)
+
+# The object itself, driven the way the executor drives it. score's process
+# sweeps only build its model, never an instance of Jk::Filter.
+if(SCORE_TESTING AND COMMAND score_add_test)
+  score_add_test(score_addon_jk_filter_test
+    SOURCES
+      tests/FilterTest.cpp
+      Jk/Filter.cpp)
+  target_include_directories(score_addon_jk_filter_test PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${SCORE_ROOT_SOURCE_DIR}/3rdparty/avendish/include")
+  target_link_libraries(score_addon_jk_filter_test PRIVATE jk_deps)
+endif()
